@@ -21,7 +21,10 @@
 				name: 'jaoselect_' + this.settings.name
 			};
 
-			return '<label><input ' + this.renderAttributes(attr) + ' />' + this.renderLabel(option) + '</label>';
+			var label = $('<label><input ' + this.renderAttributes(attr) + ' />' + this.renderLabel(option) + '</label>');
+			label.data($.extend({title: option.text(), class: option.attr('class'), value: option.val()}, option.data()));
+
+			return label;
 		},
 
 		renderLabel: function(option) {
@@ -36,13 +39,14 @@
 		// render the html for the options
 		renderOptionsList: function() {
 
-			var html = '';
+			var html = $('<div class="jao_options"></div>');
 			var self = this;
+			var options = [];
 			this.model.find('option').each(function() {
-				html += self.renderOption($(this));
+				html.append(self.renderOption($(this)));
 			});
 
-			return '<div class="jao_options">' + html + '</div>';
+			return html;
 
 		},
 
@@ -64,7 +68,6 @@
 				'</div>'
 			);
 
-
 			this.block.append(this.renderOptionsList());
 
 			// Appending element to body, so we can adjust width and height of header and options list
@@ -74,6 +77,11 @@
 			// Attach element where it belongs
 			$('body').detach('.jaoselect');
 			model.after(this.block);
+
+			// If multiple, model must support multiple selection
+			if (this.settings.multiple) {
+				this.model.attr('multiple', 'multiple');
+			}
 
 			return this.block;
 		},
@@ -146,7 +154,6 @@
 			if (!this.settings.multiple && this.settings.dropdown) {
 				this.toggleList(false);
 			}
-
 			this.updateModel();
 		},
 
@@ -187,21 +194,41 @@
 
 		updateHeader: function() {
 
-			var titles = [];
+			var values = [], html;
 
-			this.options.filter(':checked').siblings('span').each(function() {
-				titles.push('<span class="' + this.className + '">' + $(this).text() + '</span>');
+			this.options.filter(':checked').parent().each(function() {
+				values.push($.extend({}, $(this).data()));
 			});
 
-			this.header.html('<span>Selected ' + titles.length + ' of ' + this.options.size() + '</span>');
-
-			var text = '';
-			if (titles.length == 1) {
-				text = titles[0];
-			} else {
-				text = titles.length ? '<span>Selected ' + titles.length + ' of ' + this.options.size() + '</span>' : this.settings.placeholder;
+			switch (values.length) {
+				case 0:
+					html = this.settings.placeholder;
+					break;
+				case 1:
+					html = this.settings.oneValueTemplate(values[0]);
+					break;
+				default:
+					html = this.settings.multipleValueTemplate(values);
 			}
-			this.header.html(text);
+
+			this.header.html(html);
+		},
+
+		oneValueTemplate: function(data) {
+			var html = '';
+			if (data.image) {
+				html += '<img src="' + data.image + '"> ';
+			}
+			html += '<span>' + data.title + '</span>'
+			return html
+		},
+
+		multipleValueTemplate: function(values) {
+			var html = [];
+			for (var i=0; i<values.length; i++) {
+				html.push(jaoSelect.prototype.oneValueTemplate(values[i]));
+			}
+			return html.join(', ');
 		},
 
 		updateList: function() {
@@ -218,8 +245,8 @@
 
 	$.fn.jaoselect = function (s) {
 
-		$(document).off('click.jaoselect');
-		$(document).on('click.jaoselect', function(e) {
+		$(document).unbind('click.jaoselect');
+		$(document).bind('click.jaoselect', function(e) {
 			$('.jaoselect').each(function() {
 				if (!$.contains(this, e.target) && $(this).data('jaoselect').settings.dropdown) {
 					$(this).data('jaoselect').toggleList(false);
@@ -241,7 +268,9 @@
 				multiple: !!$this.attr('multiple'),
 				dropdown: !$this.attr('multiple'),
 				name: $this.attr('name'),
-				placeholder: '&nbsp;'
+				placeholder: '&nbsp;',
+				oneValueTemplate: jaoSelect.prototype.oneValueTemplate,
+				multipleValueTemplate: jaoSelect.prototype.multipleValueTemplate
 			}, s);
 
 			// Correcting settings

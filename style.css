@@ -1,22 +1,20 @@
 .jaoselect {
 	cursor: default;
-	font: Verdana,Sans-Serif;
+	font-family: Verdana,Sans-Serif;
+	font-size: 14px;
     display: inline-block;
 	position: relative;
 }
 
 .jao_header {
-	background: #FFF url(images/dropdown.gif) right center no-repeat;
+	background: transparent url(images/dropdown.gif) right center no-repeat;
 	border: 1px solid #BBB;
 	padding: 1px 15px 1px 5px;
 	overflow: hidden;
+	white-space: nowrap;
 }
-
-.jao_header:hover {
-	background-image: url(images/dropdown_hover.gif);
-}
-
-.jaoselect.list .jao_header {display: none;}
+.jao_header:hover { background-image: url(images/dropdown_hover.gif); }
+.jaoselect.list .jao_header { display: none; }
 
 .jao_options {
 	background: #fff;
@@ -41,10 +39,8 @@
 	padding: 1px 5px;
 	white-space: nowrap;
 }
-
-.jaoselect label.selected {
-	background-color: #DCE5F8;
-}
+.jaoselect label.selected { background-color: #DCE5F8; }
+.jaoselect label:hover { background-color: #eee; }
 
 .jaoselect label input {
 	margin: 1px 5px 1px 0;
@@ -58,8 +54,9 @@
 	top: auto;
 }
 
-.jaoselect label:hover {
-	background-color: #eee;
-}
+/* Hack for IE >= 8*/
+.jaoselect label input[type="checkbox"] { vertical-align: -3px\0/; }
+/* Hack for FF */
+@-moz-document url-prefix() { .jaoselect label input[type="checkbox"] { vertical-align: -4px; } }
 
-.jaoselect label img {vertical-align: middle}
+.jaoselect label img, .jao_header img {vertical-align: middle}
