@@ -1,0 +1,65 @@
+.jaoselect {
+	cursor: default;
+	font: Verdana,Sans-Serif;
+    display: inline-block;
+	position: relative;
+}
+
+.jao_header {
+	background: #FFF url(images/dropdown.gif) right center no-repeat;
+	border: 1px solid #BBB;
+	padding: 1px 15px 1px 5px;
+	overflow: hidden;
+}
+
+.jao_header:hover {
+	background-image: url(images/dropdown_hover.gif);
+}
+
+.jaoselect.list .jao_header {display: none;}
+
+.jao_options {
+	background: #fff;
+	border: 1px solid #B2B2B2;
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+.jaoselect.dropdown .jao_options {
+	display: none;
+	margin-top: -1px;
+	position: absolute;
+	z-index: 9999;
+}
+
+.jaoselect label {
+	cursor: default;
+	display: block;
+	overflow: hidden;
+	padding: 1px 5px;
+	white-space: nowrap;
+}
+
+.jaoselect label.selected {
+	background-color: #DCE5F8;
+}
+
+.jaoselect label input {
+	margin: 1px 5px 1px 0;
+	padding: 0;
+	position: relative;
+}
+
+.jaoselect label input[type="radio"] {
+	left:-9999px;
+	position: absolute !important;
+	top: auto;
+}
+
+.jaoselect label:hover {
+	background-color: #eee;
+}
+
+.jaoselect label img {vertical-align: middle}
