@@ -1,1 +1,3 @@
-Just Another One select plugin for jQuery. I've tried to make plugin supporting both single- and multiselect, dropdown and list view.
+Just Another One select plugin for jQuery. I've tried to make plugin supporting both single- and multiselect, dropdown and list view. It also supports styled select options with images.
+
+I've tried my best to make lightweight highly customizable plugin with good design. I would appreciate any bug reports, feature requests and help :)

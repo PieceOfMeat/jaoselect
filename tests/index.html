@@ -2,19 +2,18 @@
 <html>
 <head>
 
-	<link rel="stylesheet" href="../style.css" type="text/css">
-	<script src="../jquery.js"></script>
-	<script src="../jquery.jaoselect.js"></script>
-	<script src="../qunit.js"></script>
+	<link rel="stylesheet" href="../src/style.css" type="text/css">
+	<script type="text/javascript" src="jquery.js"></script>
+	<script src="../src/jquery.jaoselect.js"></script>
+	<script src="qunit.js"></script>
 
 
 	<script>
 		$(document).ready(function() {
-			$('#test1').jaoselect({dropdown:true, width: 200, multiple: true});
+			$('#test1').jaoselect({dropdown:true, width: 200, template: {
+				placeholder: function() { return 'this width is: ' + this.settings.width; }
+			}});
 			$('#test2').jaoselect({dropdown:true});
-
-
-
 		});
 	</script>
 
@@ -25,22 +24,28 @@
 	<table style="width: 100%">
 	<tr>
 		<td>
-			<select id="test1">
-				<option value="1" data-image="images/silk-1.png" class="test">value 1</option>
-				<option value="2" data-image="images/silk-2.png">value 2</option>
-				<option value="3" data-image="images/silk-3.png">value 3</option>
-				<option value="4" data-image="images/silk-4.png">value 4</option>
-				<option value="5" data-image="images/silk-5.png">value 5 and very very very very very long title</option>
-			</select>
+			<label>
+				Single select
+				<select id="test1">
+					<option value="1" data-image="images/silk-1.png" class="test">value 1</option>
+					<option value="2" data-image="images/silk-2.png" disabled>value 2</option>
+					<option value="3" data-image="images/silk-3.png">value 3</option>
+					<option value="4" data-image="images/silk-4.png">value 4</option>
+					<option value="5" data-image="images/silk-5.png">value 5 and very very very very very long title</option>
+				</select>
+			</label>
 		</td>
 		<td>
-			<select id="test2" multiple>
-				<option value="1" data-image="images/milky-1.png">value 1</option>
-				<option value="2" data-image="images/milky-2.png">value 2 and very very very very very long option that is supposed to be wider than select element</option>
-				<option value="3" data-image="images/milky-3.png">value 3</option>
-				<option value="4" data-image="images/milky-4.png">value 4</option>
-				<option value="5" data-image="images/milky-5.png" selected>value 5</option>
-			</select>
+			<label>
+				Multiple select
+				<select id="test2" multiple>
+					<option value="1" data-image="images/milky-1.png">value 1</option>
+					<option value="2" data-image="images/milky-2.png">value 2 and very very very very very long option that is supposed to be wider than select element</option>
+					<option value="3" data-image="images/milky-3.png">value 3</option>
+					<option value="4" data-image="images/milky-4.png">value 4</option>
+					<option value="5" data-image="images/milky-5.png" selected>value 5</option>
+				</select>
+			</label>
 		</td>
 	</tr>
 	</table>

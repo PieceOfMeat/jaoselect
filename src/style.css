@@ -4,20 +4,24 @@
 	font-size: 14px;
     display: inline-block;
 	position: relative;
+	vertical-align: middle;
 }
 
 .jao_header {
-	background: transparent url(images/dropdown.gif) right center no-repeat;
+	background: url(images/dropdown.gif) no-repeat scroll right center #FFF;
 	border: 1px solid #BBB;
 	padding: 1px 15px 1px 5px;
 	overflow: hidden;
 	white-space: nowrap;
 }
 .jao_header:hover { background-image: url(images/dropdown_hover.gif); }
+
 .jaoselect.list .jao_header { display: none; }
+.jao_placeholder { color: #999; }
+.jao_header span {overflow: hidden;}
 
 .jao_options {
-	background: #fff;
+	background: #FFF;
 	border: 1px solid #B2B2B2;
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -39,14 +43,16 @@
 	padding: 1px 5px;
 	white-space: nowrap;
 }
-.jaoselect label.selected { background-color: #DCE5F8; }
-.jaoselect label:hover { background-color: #eee; }
+.jaoselect label.selected { background-color: #DCE5F8}
+.jaoselect label:hover { background-color: #EEE}
 
 .jaoselect label input {
 	margin: 1px 5px 1px 0;
 	padding: 0;
 	position: relative;
 }
+
+.jaoselect label img, .jao_header img {vertical-align: middle}
 
 .jaoselect label input[type="radio"] {
 	left:-9999px;
@@ -58,5 +64,3 @@
 .jaoselect label input[type="checkbox"] { vertical-align: -3px\0/; }
 /* Hack for FF */
 @-moz-document url-prefix() { .jaoselect label input[type="checkbox"] { vertical-align: -4px; } }
-
-.jaoselect label img, .jao_header img {vertical-align: middle}

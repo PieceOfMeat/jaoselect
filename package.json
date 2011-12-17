@@ -1,0 +1,39 @@
+{
+    "name": "jaoselect",
+    "version": "0.1.0",
+    "title": "jQuery.jaoSelect()",
+    "author": {
+        "name": "Sergey Koloney",
+        "url": "https://github.com/jeresig"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "MIT-LICENSE.txt"
+        },
+        {
+            "type": "GPL",
+            "url": "GPL-LICENSE.txt"
+        }
+    ],
+    "dependencies": {
+        "jquery": ">=1.6.1"
+    },
+    "description": "This is Just Another One Select plugin for jQuery. It supports both single and multiple selectors, dropdown and list view. It also supports styled select options with images.",
+    "keywords": [
+        "select",
+        "combobox",
+        "multiple",
+        "images"
+    ],
+    "homepage": "https://github.com/PieceOfMeat/jaoselect",
+    "contributors": [
+        {
+            "name": "Sergey Koloney",
+            "url": "https://github.com/PieceOfMeat/"
+        }
+    ],
+    "files": [
+        "src"
+    ]
+}
