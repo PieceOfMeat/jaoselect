@@ -1,4 +1,4 @@
-.jaoselect {
+.jao_select {
 	cursor: default;
 	font-family: Verdana,Sans-Serif;
 	font-size: 14px;
@@ -8,15 +8,23 @@
 }
 
 .jao_header {
-	background: url(images/dropdown.gif) no-repeat scroll right center #FFF;
 	border: 1px solid #BBB;
 	padding: 1px 15px 1px 5px;
+	height: 18px;
 	overflow: hidden;
 	white-space: nowrap;
 }
-.jao_header:hover { background-image: url(images/dropdown_hover.gif); }
 
-.jaoselect.list .jao_header { display: none; }
+.jao_arrow {
+	background: url(images/dropdown.gif) no-repeat scroll center center #FFF;
+	position: absolute;
+	height: 18px;
+	right: 1px;
+	width: 16px;
+}
+.jao_select:hover .jao_arrow { background-image: url(images/dropdown_hover.gif); }
+
+.jao_select.list .jao_header { display: none; }
 .jao_placeholder { color: #999; }
 .jao_header span {overflow: hidden;}
 
@@ -29,38 +37,37 @@
 	padding: 0;
 }
 
-.jaoselect.dropdown .jao_options {
+.jao_select.dropdown .jao_options {
 	display: none;
 	margin-top: -1px;
 	position: absolute;
 	z-index: 9999;
 }
 
-.jaoselect label {
+.jao_select label {
 	cursor: default;
 	display: block;
 	overflow: hidden;
 	padding: 1px 5px;
 	white-space: nowrap;
 }
-.jaoselect label.selected { background-color: #DCE5F8}
-.jaoselect label:hover { background-color: #EEE}
+.jao_select label.selected { background-color: #DCE5F8}
+.jao_select label:hover { background-color: #EEE}
 
-.jaoselect label input {
+.jao_select label input {
 	margin: 1px 5px 1px 0;
 	padding: 0;
 	position: relative;
 }
 
-.jaoselect label img, .jao_header img {vertical-align: middle}
+.jao_select label img, .jao_header img {vertical-align: middle}
 
-.jaoselect label input[type="radio"] {
+.jao_select label input[type="radio"] {
 	left:-9999px;
 	position: absolute !important;
-	top: auto;
 }
 
 /* Hack for IE >= 8*/
-.jaoselect label input[type="checkbox"] { vertical-align: -3px\0/; }
+.jao_select label input[type="checkbox"] { vertical-align: -3px\0/; }
 /* Hack for FF */
 @-moz-document url-prefix() { .jaoselect label input[type="checkbox"] { vertical-align: -4px; } }

@@ -3,6 +3,12 @@
 <head>
 
 	<link rel="stylesheet" href="../src/style.css" type="text/css">
+	<style>
+		.jao_select.big .jao_header {height: 64px;}
+		.jao_select.big .jao_arrow {height: 64px;}
+	</style>
+	
+	
 	<script type="text/javascript" src="jquery.js"></script>
 	<script src="../src/jquery.jaoselect.js"></script>
 	<script src="qunit.js"></script>
@@ -14,6 +20,8 @@
 				placeholder: function() { return 'this width is: ' + this.settings.width; }
 			}});
 			$('#test2').jaoselect({dropdown:true});
+
+			$('#test1').click(function() {console.log('WTF?!')});
 		});
 	</script>
 
@@ -38,7 +46,7 @@
 		<td>
 			<label>
 				Multiple select
-				<select id="test2" multiple>
+				<select id="test2" multiple class="big">
 					<option value="1" data-image="images/milky-1.png">value 1</option>
 					<option value="2" data-image="images/milky-2.png">value 2 and very very very very very long option that is supposed to be wider than select element</option>
 					<option value="3" data-image="images/milky-3.png">value 3</option>

@@ -13,6 +13,7 @@
 		this.header = this.block.find('.jao_header');
 		this.list = this.block.find('.jao_options');
 		this.options = this.block.find('.jao_options input');
+		this.placeholder = this.block.find('.jao_value');
 		this.settings = settings;
 
 		this.block.data('jaoselect', this);
@@ -20,7 +21,6 @@
 		this.header.click($.proxy(function() {this.toggleList();}, this));
 		this.options.click($.proxy(function() {this.onOptionClick();}, this));
 		this.model.change($.proxy(function() {this.onModelChange();}, this));
-
 
 		this.onModelChange();
 
@@ -31,9 +31,20 @@
 
 		onOptionClick: function() {
 			if (!this.settings.multiple && this.settings.dropdown) {
-				this.toggleList(false);
+				this.hideList();
 			}
 			this.updateModel();
+		},
+
+		updateModel: function() {
+			this.model.val(this.value());
+			this.model.trigger('change');
+		},
+
+		onModelChange: function() {
+			this.setValue(this.model.val());
+			this.updateHeader();
+			this.updateList();
 		},
 
 		value: function(value) {
@@ -65,37 +76,24 @@
 			}
 		},
 
-		updateModel: function() {
-			this.model.val(this.value());
-			this.model.trigger('change');
-		},
-
-		onModelChange: function() {
-			this.setValue(this.model.val());
-			this.updateHeader();
-			this.updateList();
-		},
-
 		/**
 		 * View section
 		 */
-		toggleList: function(toShow) {
-			if (arguments.length === 0) {
-				this.list.toggle();
-				return;
-			}
-			if (toShow) {
-				this.list.show();
-			} else {
-				this.list.hide();
-			}
-		},
+		toggleList: function() { this.list.toggle(); },
+		openList: function() { this.list.show(); },
+		hideList: function() { this.list.hide(); },
 
+		/**
+		 * Update list view: set correct class for checked labels
+		 */
 		updateList: function() {
 			this.list.find('>label').removeClass('selected');
 			this.list.find('>label:has(input:checked)').addClass('selected');
 		},
 
+		/**
+		 * Update combobox header: get selected items and view them in header
+		 */
 		updateHeader: function() {
 			var values = [], html;
 
@@ -105,55 +103,21 @@
 
 			switch (values.length) {
 				case 0:
-					html = this.settings.template.placeholder.call(this);
+					html = this.settings.template.placeholder.call(this, values);
 					break;
 				case 1:
-					html = this.settings.template.singleValue.call(this, values[0]);
+					html = this.settings.template.singleValue.call(this, values);
 					break;
 				default:
 					html = this.settings.template.multipleValue.call(this, values);
 			}
 
-			this.header.html(html);
-		},
-
-		/**
-		 * Templates for combobox header
-		 */
-		placeholder: function() {
-			return '<span class="jao_placeholder">' + this.settings.placeholder + '</span>';
-		},
-
-		singleValue: function(value) {
-			var html = '';
-			if (value.image) {
-				html += '<img src="' + value.image + '"> ';
-			}
-			html += '<span>' + value.title + '</span>';
-			return html;
-		},
-
-		multipleValue: function(values) {
-			var i, html = [];
-			for (i=0; i<values.length; i++) {
-				html.push(JaoSelect.prototype.singleValue(values[i]));
-			}
-			return html.join(', ');
+			this.placeholder.html(html);
 		}
 	};
 
 
-
-
 	$.fn.jaoselect = function (s) {
-		$(document).unbind('click.jaoselect');
-		$(document).bind('click.jaoselect', function(e) {
-			$('.jaoselect').each(function() {
-				if (!$.contains(this, e.target) && $(this).data('jaoselect').settings.dropdown) {
-					$(this).data('jaoselect').toggleList(false);
-				}
-			});
-		});
 
 		// Initialize each multiselect
 		return this.each(function () {
@@ -181,6 +145,58 @@
 		});
 	};
 
+	$.fn.jaoselect.index = 0; // Index for naming different selectors if DOM name doesn't provided
+
+	/**
+	 * Templates for combobox header
+	 * This is set of functions which can be called from JaoSelect object within its scope.
+	 * They return some html (depending on currently selected values), which is set to header when
+	 * combobox value changes.
+	 */
+	$.fn.jaoselect.template = {
+
+		/**
+		 * @return placeholder html
+		 */
+		placeholder: function() {
+			return '<span class="jao_placeholder">' + this.settings.placeholder + '</span>';
+		},
+
+		/**
+		 * @param values array of values
+		 * @return html for first value
+		 */
+		singleValue: function(values) {
+			var html = '', value = values[0];
+
+			if (value.image) {
+				html += '<img src="' + value.image + '"> ';
+			}
+			html += '<span>' + value.title + '</span>';
+			return html;
+		},
+
+		/**
+		 * @param values array
+		 * @return html for all values, comma-separated
+		 */
+		multipleValue: function(values) {
+			var i, html = [];
+			for (i=0; i<values.length; i++) {
+				html.push(this.settings.template.singleValue.call(this, [values[i]]));
+			}
+			return html.join(', ');
+		},
+
+		/**
+		 * @param values
+		 * @return html for quantity of selected items and overall options
+		 */
+		selectedCount: function(values) {
+			return 'Selected ' + values.length + ' of ' + this.options.size();
+		}
+	};
+
 	$.fn.jaoselect.defaults = {
 		maxDropdownHeight: 400,
 		maxDropdownWidth: 800,
@@ -188,12 +204,11 @@
 		placeholder: '&nbsp;',
 
 		template: {
-			placeholder: JaoSelect.prototype.placeholder,
-			singleValue: JaoSelect.prototype.singleValue,
-			multipleValue: JaoSelect.prototype.multipleValue
+			placeholder: $.fn.jaoselect.template.placeholder,
+			singleValue: $.fn.jaoselect.template.singleValue,
+			multipleValue: $.fn.jaoselect.template.selectedCount
 		}
 	};
-	$.fn.jaoselect.index = 0; // Index for naming different selectors if Dom name doesn't provided
 
 	/**
 	 * Helper for rendering html code
@@ -206,7 +221,7 @@
 			this.model = model;
 
 			var classNames = [
-				'jaoselect',
+				'jao_select',
 				this.model.attr('class'),
 				(this.settings.multiple) ? 'multiple':'single',
 				(this.settings.dropdown) ? 'dropdown':'list'
@@ -214,16 +229,34 @@
 
 			this.block = $(
 				'<div class="' + classNames.join(' ') + '">' +
-					'<div class="jao_header"></div>' +
+					'<div class="jao_header">' +
+						'<div class="jao_arrow"></div>' +
+						'<div class="jao_value"></div>' +
+					'</div>' +
 					this.renderOptionsList() +
 				'</div>'
-			).appendTo('body'); // We can adjust width and height of element appended to body.
-
+			).appendTo('body');
+			// Sometimes model selector is in hidden or invisible block,
+			// so we cannot adjust jaoselect in that place and must attach it to body,
+			// then reattach in its place
 			this.adjustStyle();
 
 			$('body').detach('.jaoselect');
 
 			return this.block;
+		},
+
+		// render the html for the options
+		renderOptionsList: function() {
+
+			var self = this,
+				html = '';
+
+			this.model.find('option').each(function() {
+				html += self.renderOption($(this));
+			});
+
+			return '<div class="jao_options">' + html +	'</div>';
 		},
 
 		// render the html for a single option
@@ -241,6 +274,7 @@
 					'data-image': option.data('image')
 				};
 			// todo: extend labelAttr with option.data() array to provide custom data form options
+			// todo: add "disabled" class for labels
 
 			return '<label ' + this.renderAttributes(labelAttr) + '>' +
 						'<input ' + this.renderAttributes(attr) + ' />' + this.renderLabel(option) +
@@ -252,19 +286,6 @@
 				image = option.data('image') ? '<img src="' + option.data('image') + '" /> ' : '';
 
 			return image + '<span ' + className + '>' + option.text() + '</span>';
-		},
-
-		// render the html for the options
-		renderOptionsList: function() {
-
-			var self = this,
-				html = '';
-
-			this.model.find('option').each(function() {
-				html += self.renderOption($(this));
-			});
-
-			return '<div class="jao_options">' + html +	'</div>';
 		},
 
 		adjustStyle: function() {
@@ -308,5 +329,18 @@
 			return html.join(' ');
 		}
 	};
+
+	$(document).bind('click.jaoselect', function(e) {
+		$('.jaoselect.dropdown').each(function() {
+			// For some reasons initial select element fires "click" event when
+			// clicking on jaoselect, so we exclude it
+			if ($(this).data('jaoselect').model[0] == e.target)
+				return;
+
+			if (!$.contains(this, e.target)) {
+				$(this).data('jaoselect').hideList();
+			}
+		});
+	});
 
 })(jQuery);
