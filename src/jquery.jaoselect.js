@@ -331,7 +331,7 @@
 	};
 
 	$(document).bind('click.jaoselect', function(e) {
-		$('.jaoselect.dropdown').each(function() {
+		$('.jao_select.dropdown').each(function() {
 			// For some reasons initial select element fires "click" event when
 			// clicking on jaoselect, so we exclude it
 			if ($(this).data('jaoselect').model[0] == e.target)
