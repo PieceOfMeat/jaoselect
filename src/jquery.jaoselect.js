@@ -1,10 +1,15 @@
 (function($) {
 	"use strict";
 
+	/**
+	 * Main controller class for jaoselect input
+	 * @param settings array of settings for widget
+	 * @param model initial <select> element, we hide it and use like a "model" layer
+	 */
 	var JaoSelect = function(settings, model) {
 
 		// Delete previously created element if exists
-		model.next('.jaoselect').remove();
+		model.next('.jao_select').remove();
 
 		// Create and cache DOM blocks
 		this.model = model.hide();
@@ -12,12 +17,13 @@
 
 		this.header = this.block.find('.jao_header');
 		this.list = this.block.find('.jao_options');
-		this.options = this.block.find('.jao_options input');
+		this.options = this.block.find('.jao_options input.jao_option');
 		this.placeholder = this.block.find('.jao_value');
 		this.settings = settings;
 
 		this.block.data('jaoselect', this);
 
+		// Event handlers
 		this.header.click($.proxy(function() {this.toggleList();}, this));
 		this.options.click($.proxy(function() {this.onOptionClick();}, this));
 		this.model.change($.proxy(function() {this.onModelChange();}, this));
@@ -29,6 +35,10 @@
 
 	JaoSelect.prototype = {
 
+		/* ---------------- Controllers ----------------- */
+		/**
+		 * Callback for option click
+		 */
 		onOptionClick: function() {
 			if (!this.settings.multiple && this.settings.dropdown) {
 				this.hideList();
@@ -36,17 +46,26 @@
 			this.updateModel();
 		},
 
+		/**
+		 * Update model input element and init UI changes
+		 */
 		updateModel: function() {
-			this.model.val(this.value());
+			this.model.val(this.getValueFromView());
 			this.model.trigger('change');
 		},
 
+		/**
+		 * Change view due to model value
+		 */
 		onModelChange: function() {
-			this.setValue(this.model.val());
-			this.updateHeader();
 			this.updateList();
+			this.updateHeader();
 		},
 
+		/**
+		 * Get/set value of input
+		 * @param value if not undefined, set this value for input element
+		 */
 		value: function(value) {
 			// Get values
 			if (!arguments.length) {
@@ -56,43 +75,57 @@
 			}
 		},
 
+		/**
+		 * Get jaoselect value
+		 * @return array
+		 */
 		getValue: function() {
-			var values = [];
-			this.options.filter(':checked').each(function() {
-				values.push($(this).val());
-			});
-			return values;
-		},
-
-		setValue: function(value) {
-			var i;
-			if (!$.isArray(value)) {
-				value = [value];
-			}
-
-			this.options.removeAttr('checked');
-			for (i=0; i<value.length; i++) {
-				this.options.filter('[value="' + value[i] + '"]').attr('checked', 'checked');
-			}
+			return this.model.val();
 		},
 
 		/**
-		 * View section
+		 * Set jaoselect value
+		 * @param value value to be set
 		 */
+		setValue: function(value) {
+			this.model.val(value);
+			this.model.trigger('change');
+		},
+
+		/**
+		 * get list of values of checked options
+		 */
+		getValueFromView: function() {
+			var value = [];
+			this.options.filter(':checked').each(function() {
+				value.push(this.value);
+			});
+			return value;
+		},
+
+		/* -------------------------- View ----------------- */
 		toggleList: function() { this.list.toggle(); },
 		openList: function() { this.list.show(); },
 		hideList: function() { this.list.hide(); },
 
 		/**
-		 * Update list view: set correct class for checked labels
+		 * Update list view: set correct checks and classes for checked labels
 		 */
 		updateList: function() {
+			var i, value = this.getValue();
+			value = $.isArray(value) ? value : [value];
+
+			this.options.removeAttr('checked');
+			for (i=0; i<value.length; i++) {
+				this.options.filter('[value="' + value[i] + '"]').attr('checked', 'checked');
+			}
+
 			this.list.find('>label').removeClass('selected');
 			this.list.find('>label:has(input:checked)').addClass('selected');
 		},
 
 		/**
-		 * Update combobox header: get selected items and view them in header
+		 * Update combobox header: get selected items and view them in header depending on their quantity
 		 */
 		updateHeader: function() {
 			var values = [], html;
@@ -117,6 +150,10 @@
 	};
 
 
+	/**
+	 * Plugin function; get defaults, merge them with real <select> settings and user settings
+	 * @param s
+	 */
 	$.fn.jaoselect = function (s) {
 
 		// Initialize each multiselect
@@ -197,6 +234,9 @@
 		}
 	};
 
+	/**
+	 * Default settings
+	 */
 	$.fn.jaoselect.defaults = {
 		maxDropdownHeight: 400,
 		maxDropdownWidth: 800,
@@ -215,6 +255,11 @@
 	 */
 	$.fn.jaoselect.htmlBuilder = {
 
+		/**
+		 * Render whole jaoselect widget
+		 * @param settings settings for widget
+		 * @param model initial <select> element
+		 */
 		render: function (settings, model) {
 
 			this.settings = settings;
@@ -246,7 +291,7 @@
 			return this.block;
 		},
 
-		// render the html for the options
+		// render html for the options
 		renderOptionsList: function() {
 
 			var self = this,
@@ -259,28 +304,36 @@
 			return '<div class="jao_options">' + html +	'</div>';
 		},
 
-		// render the html for a single option
+		/**
+		 * render html for a single option
+		 * @param option
+		 */
 		renderOption: function(option) {
 			var attr = {
 					type: this.settings.multiple? 'checkbox' : 'radio',
 					value: option.val(),
 					name: 'jaoselect_' + this.settings.name,
-					disabled: option.attr('disabled') ? 'disabled' : ''
+					disabled: option.attr('disabled') ? 'disabled' : '',
+					'class': 'jao_option'
 				},
 				labelAttr = {
 					'data-title': option.text(),
 					'data-cls': option.attr('class') || '',
 					'data-value': option.val(),
-					'data-image': option.data('image')
+					'data-image': option.data('image'),
+					'class': option.attr('disabled') ? 'disabled' : ''
 				};
 			// todo: extend labelAttr with option.data() array to provide custom data form options
-			// todo: add "disabled" class for labels
 
 			return '<label ' + this.renderAttributes(labelAttr) + '>' +
 						'<input ' + this.renderAttributes(attr) + ' />' + this.renderLabel(option) +
 					'</label>';
 		},
 
+		/**
+		 * Render label for one option
+		 * @param option
+		 */
 		renderLabel: function(option) {
 			var className = option.attr('class') ? 'class="' + option.attr('class') + '"' : '',
 				image = option.data('image') ? '<img src="' + option.data('image') + '" /> ' : '';
@@ -288,6 +341,9 @@
 			return image + '<span ' + className + '>' + option.text() + '</span>';
 		},
 
+		/**
+		 * Adjust width and height of header and dropdown list due to settings
+		 */
 		adjustStyle: function() {
 			this.block.css({
 				width: this.settings.width + 'px'
@@ -300,6 +356,9 @@
 			}
 		},
 
+		/**
+		 * Adjust dropdown combobox header and options list
+		 */
 		adjustDropdownStyle: function() {
 			var header = this.block.find('div.jao_header'),
 				options = this.block.find('div.jao_options'),
@@ -314,11 +373,18 @@
 			});
 		},
 
+		/**
+		 * Adjust options list for non-dropdown selector
+		 */
 		adjustListStyle: function() {
 			var options = this.block.find('div.jao_options');
 			options.css('height', this.settings.height + 'px');
 		},
 
+		/**
+		 * Get html for given html attributes
+		 * @param attr object - list of attributes and their values
+		 */
 		renderAttributes: function(attr) {
 			var key, html = [];
 			for (key in attr) {
@@ -330,6 +396,10 @@
 		}
 	};
 
+	/**
+	 * Document click handler, it is responsible for closing
+	 * jaoselect dropdown list when user click somewhere else in the page
+	 */
 	$(document).bind('click.jaoselect', function(e) {
 		$('.jao_select.dropdown').each(function() {
 			// For some reasons initial select element fires "click" event when

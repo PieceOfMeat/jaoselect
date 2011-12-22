@@ -19,9 +19,9 @@
 			$('#test1').jaoselect({dropdown:true, width: 200, template: {
 				placeholder: function() { return 'this width is: ' + this.settings.width; }
 			}});
-			$('#test2').jaoselect({dropdown:true});
-
-			$('#test1').click(function() {console.log('WTF?!')});
+			$('#test2').jaoselect({dropdown:true, template: {
+				multipleValue: $.fn.jaoselect.template.multipleValue
+			}});
 		});
 	</script>
 
@@ -49,7 +49,7 @@
 				<select id="test2" multiple class="big">
 					<option value="1" data-image="images/milky-1.png">value 1</option>
 					<option value="2" data-image="images/milky-2.png">value 2 and very very very very very long option that is supposed to be wider than select element</option>
-					<option value="3" data-image="images/milky-3.png">value 3</option>
+					<option value="3" disabled data-image="images/milky-3.png">value 3</option>
 					<option value="4" data-image="images/milky-4.png">value 4</option>
 					<option value="5" data-image="images/milky-5.png" selected>value 5</option>
 				</select>

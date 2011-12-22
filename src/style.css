@@ -54,6 +54,8 @@
 }
 .jao_select label.selected { background-color: #DCE5F8}
 .jao_select label:hover { background-color: #EEE}
+.jao_select label.disabled {color: #AAA;}
+.jao_select label.disabled:hover {background: #FFF;}
 
 .jao_select label input {
 	margin: 1px 5px 1px 0;
