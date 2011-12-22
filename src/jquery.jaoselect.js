@@ -139,7 +139,7 @@
 					html = this.settings.template.placeholder.call(this, values);
 					break;
 				case 1:
-					html = this.settings.template.singleValue.call(this, values);
+					html = this.settings.template.singleValue.call(this, values[0]);
 					break;
 				default:
 					html = this.settings.template.multipleValue.call(this, values);
@@ -203,8 +203,8 @@
 		 * @param values array of values
 		 * @return html for first value
 		 */
-		singleValue: function(values) {
-			var html = '', value = values[0];
+		singleValue: function(value) {
+			var html = '';
 
 			if (value.image) {
 				html += '<img src="' + value.image + '"> ';
@@ -220,7 +220,7 @@
 		multipleValue: function(values) {
 			var i, html = [];
 			for (i=0; i<values.length; i++) {
-				html.push(this.settings.template.singleValue.call(this, [values[i]]));
+				html.push(this.settings.template.singleValue.call(this, values[i]));
 			}
 			return html.join(', ');
 		},
