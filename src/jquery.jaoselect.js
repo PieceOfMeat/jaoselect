@@ -3,8 +3,8 @@
 
 	/**
 	 * Main controller class for jaoselect input
-	 * @param settings array of settings for widget
-	 * @param model initial <select> element, we hide it and use like a "model" layer
+	 * @param {Object} settings for widget
+	 * @param {Node} model initial <select> element, we hide it and use like a "model" layer
 	 */
 	var JaoSelect = function(settings, model) {
 
@@ -103,6 +103,17 @@
 			return value;
 		},
 
+		/**
+		 * get list of values with attributes
+		 */
+		getValueWithData: function() {
+			var values = [];
+			this.options.filter(':checked').parent().each(function() {
+				values.push($.extend({}, $(this).data()));
+			});
+			return values;
+		},
+
 		/* -------------------------- View ----------------- */
 		toggleList: function() { this.list.toggle(); },
 		openList: function() { this.list.show(); },
@@ -128,15 +139,11 @@
 		 * Update combobox header: get selected items and view them in header depending on their quantity
 		 */
 		updateHeader: function() {
-			var values = [], html;
-
-			this.options.filter(':checked').parent().each(function() {
-				values.push($.extend({}, $(this).data()));
-			});
+			var values = this.getValueWithData(), html;
 
 			switch (values.length) {
 				case 0:
-					html = this.settings.template.placeholder.call(this, values);
+					html = this.settings.template.placeholder.call(this);
 					break;
 				case 1:
 					html = this.settings.template.singleValue.call(this, values[0]);
@@ -162,16 +169,11 @@
 
 				settings = $.extend(true, {}, $.fn.jaoselect.defaults, {
 					// Settings specific to dom element
-					width: $this.width(),
+					width: this.style.width || $this.width() + 'px',
 					height: $this.height(),
 					multiple: !!$this.attr('multiple'),
 					name: $this.attr('name') || $.fn.jaoselect.index++
 				}, s);
-
-			// Correcting settings
-			if (settings.maxDropdownWidth < settings.width) {
-				settings.maxDropdownWidth = settings.width;
-			}
 
 			// If multiple, model must support multiple selection
 			if (settings.multiple) {
@@ -200,7 +202,7 @@
 		},
 
 		/**
-		 * @param values array of values
+		 * @param value array of values
 		 * @return html for first value
 		 */
 		singleValue: function(value) {
@@ -239,7 +241,6 @@
 	 */
 	$.fn.jaoselect.defaults = {
 		maxDropdownHeight: 400,
-		maxDropdownWidth: 800,
 		dropdown: true,
 		placeholder: '&nbsp;',
 
@@ -316,14 +317,12 @@
 					disabled: option.attr('disabled') ? 'disabled' : '',
 					'class': 'jao_option'
 				},
-				labelAttr = {
+				labelAttr = $.extend({
 					'data-title': option.text(),
 					'data-cls': option.attr('class') || '',
 					'data-value': option.val(),
-					'data-image': option.data('image'),
 					'class': option.attr('disabled') ? 'disabled' : ''
-				};
-			// todo: extend labelAttr with option.data() array to provide custom data form options
+				}, this.dataToAttributes(option));
 
 			return '<label ' + this.renderAttributes(labelAttr) + '>' +
 						'<input ' + this.renderAttributes(attr) + ' />' + this.renderLabel(option) +
@@ -346,7 +345,7 @@
 		 */
 		adjustStyle: function() {
 			this.block.css({
-				width: this.settings.width + 'px'
+				width: this.settings.width
 			});
 
 			if (this.settings.dropdown) {
@@ -364,8 +363,6 @@
 				options = this.block.find('div.jao_options'),
 				optionsHeight = Math.min(options.innerHeight(), this.settings.maxDropdownHeight),
 				optionsWidth = Math.max(header.innerWidth(), options.width());
-
-			optionsWidth = Math.min(optionsWidth, this.settings.maxDropdownWidth);
 
 			options.css({
 				width: optionsWidth + 'px',
@@ -393,6 +390,16 @@
 				}
 			}
 			return html.join(' ');
+		},
+
+		dataToAttributes: function(source) {
+			var data = source.data(), result = {}, key;
+
+			for (key in data) {
+				result['data-' + key] = data[key];
+			}
+
+			return result;
 		}
 	};
 
