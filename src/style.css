@@ -1,8 +1,8 @@
 .jao_select {
 	cursor: default;
+	display: inline-block;
 	font-family: Verdana,Sans-Serif;
 	font-size: 14px;
-    display: inline-block;
 	position: relative;
 	vertical-align: middle;
 }
@@ -10,16 +10,16 @@
 .jao_header {
 	background-color: #FFF;
 	border: 1px solid #BBB;
-	padding: 1px 15px 1px 5px;
-	height: 18px;
+	height: 20px;
 	overflow: hidden;
+	padding: 1px 15px 1px 5px;
 	white-space: nowrap;
 }
 
 .jao_arrow {
 	background: url(images/dropdown.gif) no-repeat scroll center center #FFF;
+	height: 20px;
 	position: absolute;
-	height: 18px;
 	right: 1px;
 	width: 16px;
 }
@@ -27,14 +27,13 @@
 
 .jao_select.list .jao_header { display: none; }
 .jao_placeholder { color: #999; }
-.jao_header span {overflow: hidden;}
 
 .jao_options {
 	background: #FFF;
 	border: 1px solid #B2B2B2;
+	margin: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	margin: 0;
 	padding: 0;
 }
 
@@ -45,6 +44,7 @@
 	z-index: 9999;
 }
 
+/* todo: disable text selection by mouse */
 .jao_select label {
 	cursor: default;
 	display: block;

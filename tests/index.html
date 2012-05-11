@@ -16,7 +16,7 @@
 
 	<script>
 		$(document).ready(function() {
-			$('#test1').jaoselect({dropdown:true, width: 200, template: {
+			$('#test1').jaoselect({dropdown:true, width: '50%', template: {
 				placeholder: function() { return 'this width is: ' + this.settings.width; }
 			}});
 			$('#test2').jaoselect({dropdown:true, template: {
@@ -39,10 +39,12 @@
 					<option value="2" data-image="images/silk-2.png" disabled>value 2</option>
 					<option value="3" data-image="images/silk-3.png">value 3</option>
 					<option value="4" data-image="images/silk-4.png">value 4</option>
-					<option value="5" data-image="images/silk-5.png">value 5 and very very very very very long title</option>
+					<option value="5" data-image="images/silk-5.png" data-else="hi :)">value 5 and very very very very very long title</option>
 				</select>
 			</label>
 		</td>
+	</tr>
+	<tr>
 		<td>
 			<label>
 				Multiple select
