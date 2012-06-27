@@ -4,7 +4,7 @@
 	/**
 	 * Main controller class for jaoselect input
 	 * @param {Object} settings for widget
-	 * @param {Node} model initial <select> element, we hide it and use like a "model" layer
+	 * @param {JQuery} model initial <select> element, we hide it and use like a "model" layer
 	 */
 	var JaoSelect = function(settings, model) {
 
@@ -13,7 +13,7 @@
 
 		// Create and cache DOM blocks
 		this.model = model.hide();
-		this.block = $.fn.jaoselect.htmlBuilder.render(settings, model).insertAfter(this.model);
+		this.block = $.fn.jaoselect.htmlBuilder.render(settings, model);
 
 		this.header = this.block.find('.jao_header');
 		this.list = this.block.find('.jao_options');
@@ -77,7 +77,7 @@
 
 		/**
 		 * Get jaoselect value
-		 * @return array
+		 * @return {Array}
 		 */
 		getValue: function() {
 			return this.model.val();
@@ -159,7 +159,7 @@
 
 	/**
 	 * Plugin function; get defaults, merge them with real <select> settings and user settings
-	 * @param s
+	 * @param s {Object} custom settings
 	 */
 	$.fn.jaoselect = function (s) {
 
@@ -202,7 +202,7 @@
 		},
 
 		/**
-		 * @param value array of values
+		 * @param value {Object} single value
 		 * @return html for first value
 		 */
 		singleValue: function(value) {
@@ -216,7 +216,7 @@
 		},
 
 		/**
-		 * @param values array
+		 * @param values {Array}
 		 * @return html for all values, comma-separated
 		 */
 		multipleValue: function(values) {
@@ -228,7 +228,7 @@
 		},
 
 		/**
-		 * @param values
+		 * @param values {Array}
 		 * @return html for quantity of selected items and overall options
 		 */
 		selectedCount: function(values) {
@@ -258,8 +258,8 @@
 
 		/**
 		 * Render whole jaoselect widget
-		 * @param settings settings for widget
-		 * @param model initial <select> element
+		 * @param settings {Object} settings for widget
+		 * @param model {JQuery} initial <select> element
 		 */
 		render: function (settings, model) {
 
@@ -281,18 +281,22 @@
 					'</div>' +
 					this.renderOptionsList() +
 				'</div>'
-			).appendTo('body');
+			);
+			
 			// Sometimes model selector is in hidden or invisible block,
 			// so we cannot adjust jaoselect in that place and must attach it to body,
 			// then reattach in its place
+			this.block.appendTo('body');
 			this.adjustStyle();
-
 			$('body').detach('.jaoselect');
+			this.block.insertAfter(this.model);
 
 			return this.block;
 		},
 
-		// render html for the options
+		/**
+		 * render html for the selector options
+		 */
 		renderOptionsList: function() {
 
 			var self = this,
@@ -307,7 +311,7 @@
 
 		/**
 		 * render html for a single option
-		 * @param option
+		 * @param option {JQuery}
 		 */
 		renderOption: function(option) {
 			var attr = {
@@ -331,7 +335,7 @@
 
 		/**
 		 * Render label for one option
-		 * @param option
+		 * @param option {JQuery} 
 		 */
 		renderLabel: function(option) {
 			var className = option.attr('class') ? 'class="' + option.attr('class') + '"' : '',
@@ -361,11 +365,11 @@
 		adjustDropdownStyle: function() {
 			var header = this.block.find('div.jao_header'),
 				options = this.block.find('div.jao_options'),
-				optionsHeight = Math.min(options.innerHeight(), this.settings.maxDropdownHeight),
-				optionsWidth = Math.max(header.innerWidth(), options.width());
+				optionsHeight = Math.min(options.innerHeight(), this.settings.maxDropdownHeight);
+				// optionsWidth = Math.max(header.innerWidth(), options.width());
 
 			options.css({
-				width: optionsWidth + 'px',
+				width: '100%', //this.settings.width, //optionsWidth + 'px',
 				height: optionsHeight + 'px'
 			});
 		},
@@ -380,7 +384,7 @@
 
 		/**
 		 * Get html for given html attributes
-		 * @param attr object - list of attributes and their values
+		 * @param attr {Object} list of attributes and their values
 		 */
 		renderAttributes: function(attr) {
 			var key, html = [];
@@ -392,6 +396,10 @@
 			return html.join(' ');
 		},
 
+		/**
+		 * Get all data- attributes from source jQuery object
+		 * source {JQuery} source element
+		 */
 		dataToAttributes: function(source) {
 			var data = source.data(), result = {}, key;
 
